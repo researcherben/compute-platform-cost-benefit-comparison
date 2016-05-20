@@ -94,6 +94,8 @@ for this_permutation_indx = 1:number_of_permutations
     
     if (min_tts_heterogeneous==0) % first time through the loop
         min_tts_heterogeneous = this_tts;
+        best_CUT_A = CUT_A_ary.*( this_permutation_ary);
+        best_CUT_B = CUT_B_ary.*(~this_permutation_ary);
     elseif (this_tts<min_tts_heterogeneous)
         min_tts_heterogeneous = this_tts;
         best_CUT_A = CUT_A_ary.*( this_permutation_ary);
