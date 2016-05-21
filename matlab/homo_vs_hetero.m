@@ -89,8 +89,8 @@ all_permutations = de2bi(0:number_of_permutations-1); % this doesn't scale well 
 
 for this_permutation_indx = 1:number_of_permutations
     this_permutation_ary = all_permutations(this_permutation_indx,:);
-    this_tts = (sum(CUT_A_ary.*( this_permutation_ary))/NNCU_A) + ...
-               (sum(CUT_B_ary.*(~this_permutation_ary))/NNCU_B);
+    this_tts = max([(sum(CUT_A_ary.*( this_permutation_ary))/NNCU_A) ...
+                    (sum(CUT_B_ary.*(~this_permutation_ary))/NNCU_B)]);
     
     if (min_tts_heterogeneous==0) % first time through the loop
         min_tts_heterogeneous = this_tts;
