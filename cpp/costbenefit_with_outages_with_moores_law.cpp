@@ -5,9 +5,11 @@
 using std::cout;
 using std::endl;
 
-/*
 void soln_count(int max_number_of_days,int hours_in_a_day,
-                int minutes_in_an_hour, int availability, double* time_to_solution);
+                int minutes_in_an_hour, int availability, 
+                double* time_to_solution_in_minutes,double* solutions_count,
+                int* time_in_days,int time_to_market_in_days);
+/*
 void cost_per_soln(int max_number_of_days);
 void tco(int max_number_of_days);
 */
@@ -55,38 +57,16 @@ int main(){
     }
     //figure; plot(time_in_days,time_to_solution); ylabel('time-to-solution'); xlabel('days');
 
-    //****************
-    //soln_count(max_number_of_days, hours_in_a_day,
-    //           minutes_in_an_hour, availability,time_to_solution);
-    double solutions_per_day[max_number_of_days];
-    for (int day_indx=0; day_indx<max_number_of_days; day_indx++){
-        solutions_per_day[day_indx]=(hours_in_a_day*minutes_in_an_hour)/
-                                    time_to_solution_in_minutes[day_indx];
-        // normalize solution count by system availability
-        solutions_per_day[day_indx]=solutions_per_day[day_indx]*(availability/100.0);
-    }
-
-    // cummulative count of solution over time
-    double solutions_count_without_time_to_market[max_number_of_days];
-    for (int day_indx=0; day_indx<max_number_of_days; day_indx++){
-        solutions_count_without_time_to_market[day_indx] = solutions_per_day[day_indx]*time_in_days[day_indx];
-    }
-    //figure; plot(time_in_days,solutions_per_day); ylabel('solutions per day'); xlabel('days');
-
     double solutions_count[max_number_of_days];
-    for (int day_indx=0; day_indx<max_number_of_days; day_indx++){
-        solutions_count[day_indx]=0;
-    }
-    for (int day_indx=time_to_market_in_days; day_indx<=max_number_of_days; day_indx++){
-        solutions_count[day_indx]=solutions_count_without_time_to_market[day_indx];
-    }
-
-    //****************
+    soln_count(max_number_of_days, hours_in_a_day,
+               minutes_in_an_hour, availability,time_to_solution_in_minutes,
+               solutions_count,time_in_days,time_to_market_in_days);
 
     //cost_per_soln(int max_number_of_days)
     double cost_per_solution[max_number_of_days];
     for (int day_indx=0; day_indx<max_number_of_days; day_indx++){
-        cost_per_solution[day_indx]=cost_per_hour_of_use*(time_to_solution_in_minutes[day_indx]/minutes_in_an_hour);
+        cost_per_solution[day_indx]=cost_per_hour_of_use*
+            (time_to_solution_in_minutes[day_indx]/minutes_in_an_hour);
     }
 
     //tco(int max_number_of_days)
@@ -103,7 +83,30 @@ int main(){
 }
 
 void soln_count(int max_number_of_days,int hours_in_a_day,
-                int minutes_in_an_hour, int availability, double* time_to_solution){
+                int minutes_in_an_hour, int availability, 
+                double* time_to_solution_in_minutes,double* solutions_count,
+                int* time_in_days,int time_to_market_in_days){
+    double solutions_per_day[max_number_of_days];
+    for (int day_indx=0; day_indx<max_number_of_days; day_indx++){
+        solutions_per_day[day_indx]=(hours_in_a_day*minutes_in_an_hour)/
+                                    time_to_solution_in_minutes[day_indx];
+        // normalize solution count by system availability
+        solutions_per_day[day_indx]=solutions_per_day[day_indx]*(availability/100.0);
+    }
+
+    // cummulative count of solution over time
+    double solutions_count_without_time_to_market[max_number_of_days];
+    for (int day_indx=0; day_indx<max_number_of_days; day_indx++){
+        solutions_count_without_time_to_market[day_indx] = solutions_per_day[day_indx]*time_in_days[day_indx];
+    }
+    //figure; plot(time_in_days,solutions_per_day); ylabel('solutions per day'); xlabel('days');
+
+    for (int day_indx=0; day_indx<max_number_of_days; day_indx++){
+        solutions_count[day_indx]=0;
+    }
+    for (int day_indx=time_to_market_in_days; day_indx<=max_number_of_days; day_indx++){
+        solutions_count[day_indx]=solutions_count_without_time_to_market[day_indx];
+    }
 }
 
 void cost_per_soln(int max_number_of_days){
