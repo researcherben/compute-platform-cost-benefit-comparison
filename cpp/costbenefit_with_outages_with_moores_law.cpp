@@ -5,13 +5,23 @@
 using std::cout;
 using std::endl;
 
+void external_cloud(int days_in_a_year,int max_number_of_days,int hours_in_a_day,
+                    int minutes_in_an_hour,double normalization_of_money_spent,
+                    int capital_cost, int initial_time_to_solution_in_minutes,
+                    int time_to_market_in_days, double availability);
+
+void selfhosted_commodity(int days_in_a_year,int max_number_of_days,int hours_in_a_day,
+                    int minutes_in_an_hour,double normalization_of_money_spent,
+                    int capital_cost, int initial_time_to_solution_in_minutes,
+                    int time_to_market_in_days, double availability);
+
 void soln_count(int max_number_of_days,int hours_in_a_day,
                 int minutes_in_an_hour, int availability, 
                 double* time_to_solution_in_minutes,double* solutions_count,
                 int* time_in_days,int time_to_market_in_days);
 /*
-void cost_per_soln(int max_number_of_days);
-void tco(int max_number_of_days);
+void cost_per_soln_based_on_capital_plus_oandm(int max_number_of_days);
+void tco_based_on_capital_plus_oandm(int max_number_of_days);
 */
 void print_results(int max_number_of_days,int* time_in_days,
                    double* solutions_count, double* cost_per_solution,
@@ -25,19 +35,45 @@ int main(){
     int number_of_years=5; // lifespan of systems being investigated
     double normalization_of_money_spent=1000000.0; // a million bucks
 
-    int max_number_of_days=0; // used to set array sizes
-    max_number_of_days=days_in_a_year*number_of_years; // number of days in X years
+    int max_number_of_days=days_in_a_year*number_of_years; // used to set array sizes; number of days in X years
 
-    /* system_category='external cloud, ie AWS' */
-
+    // following parameters are specific to AWS
     int capital_cost=0; // dollars; NRE and acquisition
-    // operations_and_maintenance_per_year=0; // dollars
-    int cost_per_hour_of_use=100; // dollars; this is in place of O&M
-
     int initial_time_to_solution_in_minutes=100; 
     int time_to_market_in_days=1; // days; includes acquisition and coding analytic
-
     double availability=99.9; // percent of system availability
+    external_cloud(days_in_a_year,max_number_of_days,hours_in_a_day,
+                   minutes_in_an_hour,normalization_of_money_spent,
+                   capital_cost, initial_time_to_solution_in_minutes,
+                   time_to_market_in_days, availability);
+
+    // following parameters are specific to self-hosted commodity
+    capital_cost=100000; // dollars; NRE and acquisition
+    int operations_and_maintenance_per_year=10000; // dollars
+    time_to_solution_in_minutes=60; 
+    time_to_market_in_days=5; // days; includes acquisition and coding analytic
+    availability=99; // percent
+    selfhosted_commodity(days_in_a_year,max_number_of_days,hours_in_a_day,
+                   minutes_in_an_hour,normalization_of_money_spent,
+                   capital_cost, initial_time_to_solution_in_minutes,
+                   time_to_market_in_days, availability);
+
+}
+
+/* system_category='self-hosted commodity servers' */
+void selfhosted_commodity(int days_in_a_year,int max_number_of_days,int hours_in_a_day,
+                    int minutes_in_an_hour,double normalization_of_money_spent,
+                    int capital_cost, int initial_time_to_solution_in_minutes,
+                    int time_to_market_in_days, double availability){
+}
+/* system_category='external cloud, ie AWS' */
+void external_cloud(int days_in_a_year,int max_number_of_days,int hours_in_a_day,
+                    int minutes_in_an_hour,double normalization_of_money_spent,
+                    int capital_cost, int initial_time_to_solution_in_minutes,
+                    int time_to_market_in_days, double availability){
+
+    // operations_and_maintenance_per_year=0; // dollars
+    int cost_per_hour_of_use=100; // dollars; this is in place of O&M
 
     /*
       The rational for including Moore's Law (https://en.wikipedia.org/wiki/Moore%27s_law) is that when I buy a computer in year X with lifespan Y, then for Y years I have that computer. In contrast, my assumption is that using Amazon's AWS for time period Y, the provider (Amazon) will be constantly refreshing their hardware (invisible to me, the user). AWS tracks with Moore's Law, hardware purchased by me does not.
@@ -79,7 +115,6 @@ int main(){
 
     print_results(max_number_of_days,time_in_days,
                   solutions_count,cost_per_solution,total_cost_of_ownership);
-
 }
 
 void soln_count(int max_number_of_days,int hours_in_a_day,
