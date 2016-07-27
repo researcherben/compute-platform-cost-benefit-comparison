@@ -25,7 +25,7 @@ availability=99.9; % percent of system availability
 % The rational for including Moore's Law (https://en.wikipedia.org/wiki/Moore%27s_law) is that when I buy a computer in year X with lifespan Y, then for Y years I have that computer. In contrast,
 % my assumption is that using Amazon's AWS for time period Y, the provider (Amazon) will be constantly refreshing their hardware
 % (invisible to me, the user). AWS tracks with Moore's Law, hardware purchased by me does not.
-doubling_period_in_days=365*2; % Moore's law
+doubling_period_in_days=days_in_a_year*2; % Moore's law
 time_in_days=[0:max_number_of_days];
 time_to_solution_in_minutes=initial_time_to_solution_in_minutes*(2.^(-time_in_days/doubling_period_in_days));
 %figure; plot(time_in_days,time_to_solution); ylabel('time-to-solution'); xlabel('days');
