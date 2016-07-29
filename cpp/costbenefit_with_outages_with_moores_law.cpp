@@ -5,278 +5,206 @@
 using std::cout;
 using std::endl;
 
-void external_cloud(int days_in_a_year,int max_number_of_days,int hours_in_a_day,
-                    int minutes_in_an_hour,double normalization_of_money_spent,
-                    int capital_cost, int initial_time_to_solution_in_minutes,
-                    int time_to_market_in_days, double availability, int* time_in_days_ary);
+void print_columns(const int * time_in_days_ary, 
+                   const double * cummulative_number_of_solutions_per_day,
+                   const double * cummulative_money_spent_per_day,
+                   const double * cost_per_solution );
 
-void selfhosted_commodity(int days_in_a_year,int max_number_of_days,int hours_in_a_day,
-                    int minutes_in_an_hour,double normalization_of_money_spent,
-                    int capital_cost, int time_to_solution_in_minutes,
-                    int time_to_market_in_days, double availability,int* time_in_days_ary);
+void cost_per_solution(double * cost_per_solution, 
+                 const double * cummulative_number_of_solutions_per_day, 
+                 const double * cummulative_money_spent_per_day);
+                 
+void money_spent_per_day(const int time_to_market_in_days, const double capital_cost,
+                         const double operations_and_maintenance_per_year,
+                         const int days_in_a_year, const int lifespan_in_days,
+                         double * cummulative_money_spent_per_day);
 
-void soln_count(int max_number_of_days,int hours_in_a_day,
-                int minutes_in_an_hour, int availability, 
-                double* solutions_per_day_ary,double* solutions_count_ary,
-                int* time_in_days_ary,int time_to_market_in_days);
-
-void cost_per_soln_based_on_capital_plus_oandm(int max_number_of_days,
-            int capital_cost,
-            int operations_and_maintenance_per_year,int days_in_a_year,
-            int time_to_market_in_days, double * cost_per_solution_ary,
-            double* solutions_count_ary);
-
-/*
-void tco_based_on_capital_plus_oandm(int max_number_of_days);
-*/
-void print_results(int max_number_of_days,int* time_in_days_ary,
-                   double* solutions_count_ary, double* cost_per_solution,
-                   double* total_cost_of_ownership);
+void number_solutions_per_day(const int time_to_market_in_days, 
+                              const int lifespan_in_days, const int hours_in_a_day,
+                              const int minutes_in_an_hour, 
+                              const double time_to_solution_in_minutes,
+                              double * cummulative_number_of_solutions_per_day);
 
 int main(){
     const int hours_in_a_day=24;
     const int minutes_in_an_hour=60;
     const int days_in_a_year=365;
-    const int number_of_years=5; // lifespan of systems being investigated
+    const int lifespan_in_years=5; // lifespan of systems being investigated
     const double normalization_of_money_spent=1000000.0; // a million bucks
 
-    int max_number_of_days=days_in_a_year*number_of_years; // used to set array sizes; number of days in X years
+    int lifespan_in_days=days_in_a_year*lifespan_in_years; // used to set array sizes
 
-    int time_in_days_ary[max_number_of_days];
-    for (int day_indx=0; day_indx<max_number_of_days; day_indx++){
+    int time_in_days_ary[lifespan_in_days];
+    for (int day_indx=0; day_indx<lifespan_in_days; day_indx++){
         time_in_days_ary[day_indx]=day_indx;
     }
 
     // following parameters are specific to AWS
-    int capital_cost=0; // dollars; NRE and acquisition
-    int initial_time_to_solution_in_minutes=100; 
-    int time_to_market_in_days=1; // days; includes acquisition and coding analytic
-    double availability=99.9; // percent of system availability
-    external_cloud(days_in_a_year,max_number_of_days,hours_in_a_day,
-                   minutes_in_an_hour,normalization_of_money_spent,
-                   capital_cost, initial_time_to_solution_in_minutes,
-                   time_to_market_in_days, availability, time_in_days_ary);
+    double capital_cost_cloud=0; // dollars; NRE and acquisition
+    double initial_time_to_solution_in_minutes=100; 
+    int time_to_market_in_days_cloud=1; // days; includes acquisition and coding analytic
+    double cost_per_hour_of_use=100.0;
+    double availability_cloud=99.9; // percent of system availability
 
-    // following parameters are specific to self-hosted commodity
-    capital_cost=100000; // dollars; NRE and acquisition
-    int operations_and_maintenance_per_year=10000; // dollars
-    int time_to_solution_in_minutes=60; 
-    time_to_market_in_days=5; // days; includes acquisition and coding analytic
-    availability=99; // percent
-    selfhosted_commodity(days_in_a_year,max_number_of_days,hours_in_a_day,
-                   minutes_in_an_hour,normalization_of_money_spent,
-                   capital_cost, time_to_solution_in_minutes,
-                   time_to_market_in_days, availability, time_in_days_ary);
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* system_category='self-hosted commodity servers' */
-void selfhosted_commodity(int days_in_a_year,int max_number_of_days,int hours_in_a_day,
-                    int minutes_in_an_hour,double normalization_of_money_spent,
-                    int capital_cost, int time_to_solution_in_minutes,
-                    int time_to_market_in_days, double availability,int* time_in_days_ary){
-
-    double solutions_per_day=0;
-    solutions_per_day=(hours_in_a_day*minutes_in_an_hour)/time_to_solution_in_minutes;
-    solutions_per_day=solutions_per_day*(availability/100);
-    double solutions_per_day_ary[max_number_of_days];
-    for (int day_indx=0; day_indx<max_number_of_days; day_indx++){
-        solutions_per_day_ary[day_indx]=solutions_per_day;
-    }
-    
-    double solutions_count_ary[max_number_of_days];
-    soln_count(max_number_of_days, hours_in_a_day,
-               minutes_in_an_hour, availability,solutions_per_day_ary,
-               solutions_count_ary,time_in_days_ary,time_to_market_in_days);
-
-    double cost_per_solution[max_number_of_days];
-    //cost_per_soln(int max_number_of_days);
-    
-    double total_cost_of_ownership[max_number_of_days];
-    //tco(int max_number_of_days);
-
-    cout << "self-hosted commodity: " << endl;
-    print_results(max_number_of_days,time_in_days_ary,
-                  solutions_count_ary,cost_per_solution,total_cost_of_ownership);
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* system_category='external cloud, ie AWS' */
-void external_cloud(int days_in_a_year,int max_number_of_days,int hours_in_a_day,
-                    int minutes_in_an_hour,double normalization_of_money_spent,
-                    int capital_cost, int initial_time_to_solution_in_minutes,
-                    int time_to_market_in_days, double availability,int* time_in_days_ary){
-
-    // operations_and_maintenance_per_year=0; // dollars
-    int cost_per_hour_of_use=100; // dollars; this is in place of O&M
-
-    /*
-      The rational for including Moore's Law (https://en.wikipedia.org/wiki/Moore%27s_law) is that when I buy a computer in year X with lifespan Y, then for Y years I have that computer. In contrast, my assumption is that using Amazon's AWS for time period Y, the provider (Amazon) will be constantly refreshing their hardware (invisible to me, the user). AWS tracks with Moore's Law, hardware purchased by me does not.
-    */
     int doubling_period_in_days;
     doubling_period_in_days=days_in_a_year*2; // Moore's law
 
-    // time to solution varies due to Moore's law
-    double time_to_solution_in_minutes_ary[max_number_of_days];
-    for (int day_indx=0; day_indx<max_number_of_days; day_indx++){
-        time_to_solution_in_minutes_ary[day_indx]=
-            initial_time_to_solution_in_minutes*
-            (pow(2,(-1.0*time_in_days_ary[day_indx]/doubling_period_in_days)));
+
+    double cummulative_money_spent_per_day_cloud[lifespan_in_days];
+    for (int day_indx=0; day_indx<time_to_market_in_days_cloud; day_indx++){
+        cummulative_money_spent_per_day_cloud[day_indx]=capital_cost_cloud;
     }
-    //figure; plot(time_in_days_ary,time_to_solution); ylabel('time-to-solution'); xlabel('days');
-
-    double solutions_per_day_ary[max_number_of_days];
-    for (int day_indx=0; day_indx<max_number_of_days; day_indx++){
-        solutions_per_day_ary[day_indx]=(hours_in_a_day*minutes_in_an_hour)/
-                                    time_to_solution_in_minutes_ary[day_indx];
-        // normalize solution count by system availability
-        solutions_per_day_ary[day_indx]=solutions_per_day_ary[day_indx]*(availability/100.0);
+    for (int day_indx=time_to_market_in_days_cloud; day_indx<lifespan_in_days; day_indx++){
+        cummulative_money_spent_per_day_cloud[day_indx] += cost_per_hour_of_use*hours_in_a_day;
     }
-
-    double solutions_count_ary[max_number_of_days];
-    soln_count(max_number_of_days, hours_in_a_day,
-               minutes_in_an_hour, availability,solutions_per_day_ary,
-               solutions_count_ary,time_in_days_ary,time_to_market_in_days);
-
-    //cost_per_soln(int max_number_of_days)
-    double cost_per_solution[max_number_of_days];
-    for (int day_indx=0; day_indx<max_number_of_days; day_indx++){
-        cost_per_solution[day_indx]=cost_per_hour_of_use*
-            (time_to_solution_in_minutes_ary[day_indx]/minutes_in_an_hour);
+    
+    double cummulative_number_of_solutions_per_day_cloud[lifespan_in_days];
+    for (int day_indx=0; day_indx<time_to_market_in_days_cloud; day_indx++){
+        cummulative_number_of_solutions_per_day_cloud[day_indx]=0;
+    }
+    double number_of_solutions_today;
+    double time_to_solution_today_in_minutes;
+    for (int day_indx=time_to_market_in_days_cloud; day_indx<lifespan_in_days; day_indx++){
+        // time to solution varies due to Moore's law
+        time_to_solution_today_in_minutes=initial_time_to_solution_in_minutes*
+                                (pow(2,(-1.0*day_indx/doubling_period_in_days)));
+        number_of_solutions_today=(hours_in_a_day*minutes_in_an_hour)/time_to_solution_today_in_minutes;
+        cummulative_number_of_solutions_per_day_cloud[day_indx] = 
+            cummulative_number_of_solutions_per_day_cloud[day_indx-1]+number_of_solutions_today;
     }
 
-    //tco(int max_number_of_days)
-    double total_cost_of_ownership[max_number_of_days];
-    for (int day_indx=0; day_indx<max_number_of_days; day_indx++){
-        total_cost_of_ownership[day_indx]=
-            cost_per_hour_of_use*hours_in_a_day*
-            time_in_days_ary[day_indx]/normalization_of_money_spent;
-    }
+    double cost_per_solution_cloud[lifespan_in_days];
+    cost_per_solution(cost_per_solution_cloud, 
+                      cummulative_number_of_solutions_per_day_cloud, 
+                      cummulative_money_spent_per_day_cloud);
+    
+    cout << "cloud:" << endl;
+    print_columns(time_in_days_ary, 
+                  cummulative_number_of_solutions_per_day_cloud,
+                  cummulative_money_spent_per_day_cloud,
+                  cost_per_solution_cloud );
 
-    cout << "AWS: " << endl;
-    print_results(max_number_of_days,time_in_days_ary,
-                  solutions_count_ary,cost_per_solution,total_cost_of_ownership);
+
+    
+    // following parameters are specific to self-hosted commodity
+    double capital_cost_commodity=100000; // dollars; NRE and acquisition
+    double operations_and_maintenance_per_year_commodity=10000; // dollars
+    double time_to_solution_in_minutes_commodity=60; 
+    int time_to_market_in_days_commodity=5; // days; includes acquisition and coding analytic
+    double availability_commodity=99; // percent
+
+    double cummulative_money_spent_per_day_commodity[lifespan_in_days];
+    money_spent_per_day(time_to_market_in_days_commodity, capital_cost_commodity,
+                        operations_and_maintenance_per_year_commodity,
+                        days_in_a_year, lifespan_in_days,
+                        cummulative_money_spent_per_day_commodity);
+
+
+    double cummulative_number_of_solutions_per_day_commodity[lifespan_in_days];
+    number_solutions_per_day(time_to_market_in_days_commodity, 
+                             lifespan_in_days, hours_in_a_day,
+                             minutes_in_an_hour, 
+                             time_to_solution_in_minutes_commodity,
+                             cummulative_number_of_solutions_per_day_commodity);
+
+
+    double cost_per_solution_commodity[lifespan_in_days];
+    cost_per_solution(cost_per_solution_commodity, 
+                      cummulative_number_of_solutions_per_day_commodity, 
+                      cummulative_money_spent_per_day_commodity);
+
+    cout << "commodity:" << endl;
+    print_columns(time_in_days_ary, 
+                  cummulative_number_of_solutions_per_day_commodity,
+                  cummulative_money_spent_per_day_commodity,
+                  cost_per_solution_commodity);
+
+
+    double capital_cost_tailored=1000000; // dollars; NRE and acquisition
+    double operations_and_maintenance_per_year_tailored=100000; // dollars
+    double time_to_solution_in_minutes_tailored=1; 
+    int time_to_market_in_days_tailored=365; // days; includes acquisition and coding analytic
+    double availability_tailored=90; // percent
+
+    double cummulative_money_spent_per_day_tailored[lifespan_in_days];
+    money_spent_per_day(time_to_market_in_days_tailored, capital_cost_tailored,
+                        operations_and_maintenance_per_year_tailored,
+                        days_in_a_year, lifespan_in_days,
+                        cummulative_money_spent_per_day_tailored);
+
+    double cummulative_number_of_solutions_per_day_tailored[lifespan_in_days];
+    number_solutions_per_day(time_to_market_in_days_tailored, 
+                             lifespan_in_days, hours_in_a_day,
+                             minutes_in_an_hour, 
+                             time_to_solution_in_minutes_tailored,
+                             cummulative_number_of_solutions_per_day_tailored)
+
+    cout << "tailored:" << endl;
+    print_columns(time_in_days_ary, 
+                  cummulative_number_of_solutions_per_day_tailored,
+                  cummulative_money_spent_per_day_tailored,
+                  cost_per_solution_tailored);
+
 }
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-void soln_count(int max_number_of_days,int hours_in_a_day,
-                int minutes_in_an_hour, int availability, 
-                double* solutions_per_day_ary,double* solutions_count_ary,
-                int* time_in_days_ary,int time_to_market_in_days){
-
-
-    // cummulative count of solution over time
-    double solutions_count_without_time_to_market[max_number_of_days];
-    for (int day_indx=0; day_indx<max_number_of_days; day_indx++){
-        solutions_count_without_time_to_market[day_indx] = solutions_per_day_ary[day_indx]*time_in_days_ary[day_indx];
-    }
-    //figure; plot(time_in_days_ary,solutions_per_day_ary); ylabel('solutions per day'); xlabel('days');
-
-    for (int day_indx=0; day_indx<max_number_of_days; day_indx++){
-        solutions_count_ary[day_indx]=0;
-    }
-    for (int day_indx=time_to_market_in_days; day_indx<=max_number_of_days; day_indx++){
-        solutions_count_ary[day_indx]=solutions_count_without_time_to_market[day_indx];
+void cost_per_solution(double * cost_per_solution, 
+                 const double * cummulative_number_of_solutions_per_day, 
+                 const double * cummulative_money_spent_per_day){
+    for (int day_indx=0; day_indx<10; day_indx++){
+        if (cummulative_number_of_solutions_per_day[day_indx]==0){
+            cost_per_solution[day_indx]=0;
+        }else{
+            cost_per_solution[day_indx]=
+            cummulative_money_spent_per_day[day_indx]/
+            cummulative_number_of_solutions_per_day[day_indx];
+        }
     }
 }
 
-
-
-
-
-
-
-
-
-void cost_per_soln_based_on_capital_plus_oandm(int max_number_of_days,
-            int capital_cost,
-            int operations_and_maintenance_per_year,int days_in_a_year,
-            int time_to_market_in_days, double * cost_per_solution_ary,
-            double* solutions_count_ary){
-    double money_spent_per_day = capital_cost+(operations_and_maintenance_per_year/days_in_a_year);
-    int time_in_days_for_money_ary[max_number_of_days];
-    for (int indx=0; indx<time_to_market_in_days; indx++){
-        time_in_days_for_money_ary[indx]=0;
-    }
-    int days_running=1;
-    for (int indx=time_to_market_in_days; indx<max_number_of_days; indx++){
-        time_in_days_for_money_ary[indx]=money_spent_per_day*days_running++;
-    }
-    for (int indx=0; indx<max_number_of_days; indx++){
-        cost_per_solution_ary[indx]=money_spent_per_day/solutions_count_ary[indx];
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-void tco_based_on_capital_plus_oandm(int max_number_of_days){
-}
-
-void print_results(int max_number_of_days,int* time_in_days_ary,
-                   double* solutions_count_ary, double* cost_per_solution,
-                   double* total_cost_of_ownership){
-    //for (int day_indx=0; day_indx<max_number_of_days; day_indx++){
-    cout << "time in days, cummulative solution count, cost per solution, TCO in millions" << endl;
+void print_columns(const int * time_in_days_ary, 
+                   const double * cummulative_number_of_solutions_per_day,
+                   const double * cummulative_money_spent_per_day,
+                   const double * cost_per_solution ){
+    cout << "time in days, cummulative number of solutions, cummulative_money_spent_per_day_cloud, cost per solution" << endl;
+    //for (int day_indx=0; day_indx<lifespan_in_days; day_indx++){
     for (int day_indx=0; day_indx<10; day_indx++){
         cout << time_in_days_ary[day_indx] << ", "
-             << solutions_count_ary[day_indx] << ", "
-             << cost_per_solution[day_indx] << ", "
-             << total_cost_of_ownership[day_indx]
+             << cummulative_number_of_solutions_per_day[day_indx] << ", "
+             << cummulative_money_spent_per_day[day_indx] << ", "
+             << cost_per_solution[day_indx]
              << endl;
+    }
+
+}
+
+void money_spent_per_day(const int time_to_market_in_days, const double capital_cost,
+                         const double operations_and_maintenance_per_year,
+                         const int days_in_a_year, const int lifespan_in_days,
+                         double * cummulative_money_spent_per_day){
+    for (int day_indx=0; day_indx<time_to_market_in_days; day_indx++){
+        cummulative_money_spent_per_day[day_indx]=capital_cost;
+    }
+    for (int day_indx=time_to_market_in_days; day_indx<lifespan_in_days; day_indx++){
+        cummulative_money_spent_per_day[day_indx] = 
+            cummulative_money_spent_per_day[day_indx-1]+
+            (operations_and_maintenance_per_year/days_in_a_year)*day_indx;
     }
 }
 
+void number_solutions_per_day(const int time_to_market_in_days, 
+                              const int lifespan_in_days, const int hours_in_a_day,
+                              const int minutes_in_an_hour, 
+                              const double time_to_solution_in_minutes,
+                              double * cummulative_number_of_solutions_per_day){
+    for (int day_indx=0; day_indx<time_to_market_in_days; day_indx++){
+        cummulative_number_of_solutions_per_day[day_indx]=0;
+    }
+    for (int day_indx=time_to_market_in_days; day_indx<lifespan_in_days; day_indx++){
+        cummulative_number_of_solutions_per_day[day_indx] = 
+            cummulative_number_of_solutions_per_day[day_indx-1]+
+            (hours_in_a_day*minutes_in_an_hour)/time_to_solution_in_minutes;
+    }
+}
