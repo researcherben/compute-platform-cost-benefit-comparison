@@ -137,7 +137,12 @@ int main(){
                              lifespan_in_days, hours_in_a_day,
                              minutes_in_an_hour, 
                              time_to_solution_in_minutes_tailored,
-                             cummulative_number_of_solutions_per_day_tailored)
+                             cummulative_number_of_solutions_per_day_tailored);
+
+    double cost_per_solution_tailored[lifespan_in_days];
+    cost_per_solution(cost_per_solution_tailored, 
+                      cummulative_number_of_solutions_per_day_tailored, 
+                      cummulative_money_spent_per_day_tailored);
 
     cout << "tailored:" << endl;
     print_columns(time_in_days_ary, 
