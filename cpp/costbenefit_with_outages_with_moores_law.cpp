@@ -59,9 +59,10 @@ int main(){
 
     cloud(lifespan_in_days,days_in_a_year, normalization_of_money_spent,
              hours_in_a_day,  minutes_in_an_hour, time_in_days_ary);
-    
+
     commodity(lifespan_in_days,days_in_a_year, normalization_of_money_spent,
              hours_in_a_day,  minutes_in_an_hour, time_in_days_ary);
+
 
     tailored(lifespan_in_days,days_in_a_year, normalization_of_money_spent,
              hours_in_a_day,  minutes_in_an_hour, time_in_days_ary);
@@ -237,7 +238,7 @@ void money_spent_per_day(const int time_to_market_in_days, const double capital_
     for (int day_indx=time_to_market_in_days; day_indx<lifespan_in_days; day_indx++){
         cummulative_money_spent_per_day[day_indx] = 
             cummulative_money_spent_per_day[day_indx-1]+
-            (operations_and_maintenance_per_year/days_in_a_year)*day_indx;
+            (operations_and_maintenance_per_year/days_in_a_year);
     }
 }
 
@@ -252,6 +253,7 @@ void number_solutions_per_day(const int time_to_market_in_days,
     for (int day_indx=time_to_market_in_days; day_indx<lifespan_in_days; day_indx++){
         cummulative_number_of_solutions_per_day[day_indx] = 
             cummulative_number_of_solutions_per_day[day_indx-1]+
-            (hours_in_a_day*minutes_in_an_hour)/time_to_solution_in_minutes;
+        (hours_in_a_day*minutes_in_an_hour)/time_to_solution_in_minutes;
+        //((day_indx-time_to_market_in_days)*hours_in_a_day*minutes_in_an_hour)/time_to_solution_in_minutes;
     }
 }
