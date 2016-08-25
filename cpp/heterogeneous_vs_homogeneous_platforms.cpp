@@ -5,23 +5,29 @@ using std::cout;
 using std::cin;
 using std::endl;
 
-void decimal_to_binary(int * arr,const int number_of_analytics);
+void decimal_to_binary(int * arr, int num, const int number_of_analytics);
 
 int main()
 {
     
-    int number_of_analytics=4;
-    int number_of_racks_of_a=5;
-    int number_of_racks_of_b=3;
-    double cut_a[number_of_analytics],cut_b[number_of_analytics];
-    cut_a[0]=4.0;
-    cut_a[1]=8.0;
-    cut_a[2]=10.0;
-    cut_a[3]=20.0;
-    cut_b[0]=2.0;
-    cut_b[1]=3.0;
-    cut_b[2]=9.0;
-    cut_b[3]=18.0;
+    const int number_of_analytics=4;
+    const int number_of_racks_of_a=5;
+    const int number_of_racks_of_b=3;
+    const double compute_time_architecture_A[number_of_analytics]={4.0, 8.0, 10.0, 20.0};
+    const double compute_time_architecture_B[number_of_analytics]={2.0, 3.0, 9.0,  18.0};
+
+    /*
+    cout << "jobs are on architecture A: ";
+    for(int indx=0; indx<number_of_analytics; indx++){
+        cout << compute_time_architecture_A[indx] << ", ";
+    }
+    cout << endl;
+    cout << "jobs are on architecture B: ";
+    for(int indx=0; indx<number_of_analytics; indx++){
+        cout << compute_time_architecture_B[indx] << ", ";
+    }
+    cout << endl;
+    */
     
     int arr[number_of_analytics];
 
@@ -29,14 +35,14 @@ int main()
     int minimum_indx;
 
     for (int indx=0; indx<pow(2,number_of_analytics); indx++){
-        decimal_to_binary(arr, indx);
+        decimal_to_binary(arr, indx,number_of_analytics);
     
         
         double time_on_a=0;
         double time_on_b=0;
         for (int jndx=0; jndx<number_of_analytics; jndx++){
-            time_on_a +=  arr[jndx]*cut_a[jndx]/(number_of_racks_of_a*1.0);
-            time_on_b += !arr[jndx]*cut_b[jndx]/(number_of_racks_of_b*1.0);
+            time_on_a +=  arr[jndx]*compute_time_architecture_A[jndx]/(number_of_racks_of_a*1.0);
+            time_on_b += !arr[jndx]*compute_time_architecture_B[jndx]/(number_of_racks_of_b*1.0);
         }
         double longest_time=0;
         if (time_on_a>time_on_b){
@@ -44,7 +50,10 @@ int main()
         }else{
             longest_time=time_on_b;
         }
+        /*
+        cout << "longest time for this configuration: ";
         cout << longest_time << endl;
+        */
         if (indx==0){
             minimum_tts = longest_time;
             minimum_indx=indx;
@@ -55,41 +64,37 @@ int main()
             }
         }
         
-        /*
-        for(int indx=number_of_analytics-1; indx>=0; indx--)
-            cout<< arr[indx];
-        cout<<endl;
-        for(int indx=number_of_analytics-1; indx>=0; indx--)
-            cout<< !arr[indx];
-        cout<<endl;
-        cout<<endl;
-        */
     }
     cout << "minimum tts: " << minimum_tts << endl;
-
-    decimal_to_binary(arr, minimum_indx);
+   
+    decimal_to_binary(arr, minimum_indx, number_of_analytics);
+    cout << "which jobs are on architecture A: ";
     for(int indx=0; indx<number_of_analytics; indx++){
-        cout <<  arr[indx]*cut_a[indx] << ", ";
+        cout <<  arr[indx]*compute_time_architecture_A[indx] << ", ";
     }
     cout<<endl;
+    cout << "which jobs are on architecture B: ";
     for(int indx=0; indx<number_of_analytics; indx++){
-        cout << !arr[indx]*cut_b[indx] << ", ";
+        cout << !arr[indx]*compute_time_architecture_B[indx] << ", ";
     }
     cout<<endl;
+    /*
+    cout << "array A:";
     for(int indx=0; indx<number_of_analytics; indx++){
         cout <<  arr[indx] << ", ";
     }
     cout<<endl;
+    cout << "array B:";
     for(int indx=0; indx<number_of_analytics; indx++){
         cout <<  !arr[indx] << ", ";
     }
     cout<<endl;
+    */
 }
 
-void decimal_to_binary(int * arr,const int number_of_analytics){
+void decimal_to_binary(int * arr, int num, const int number_of_analytics){
     int counter=0;
     int remainder;
-    int num=number_of_analytics;
     for (int indx=0; indx<number_of_analytics; indx++){
         arr[indx]=0;
     }
