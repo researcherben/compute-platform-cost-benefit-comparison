@@ -9,24 +9,24 @@ using std::ofstream;
 
 void print_columns(const int * time_in_days_ary, const int lifespan_in_days,
                    const double normalization_of_money_spent,
-                   const double * cummulative_number_of_solutions_per_day,
-                   const double * cummulative_money_spent_per_day,
+                   const double * cumulative_number_of_solutions_per_day,
+                   const double * cumulative_money_spent_per_day,
                    const double * cost_per_solution,const char * filename );
 
 void cost_per_solution(double * cost_per_solution, const int lifespan_in_days,
-                 const double * cummulative_number_of_solutions_per_day, 
-                 const double * cummulative_money_spent_per_day);
+                 const double * cumulative_number_of_solutions_per_day, 
+                 const double * cumulative_money_spent_per_day);
                  
 void money_spent_per_day(const int time_to_market_in_days, const double capital_cost,
                          const double operations_and_maintenance_per_year,
                          const int days_in_a_year, const int lifespan_in_days,
-                         double * cummulative_money_spent_per_day);
+                         double * cumulative_money_spent_per_day);
 
 void number_solutions_per_day(const int time_to_market_in_days, 
                               const int lifespan_in_days, const int hours_in_a_day,
-                              const int minutes_in_an_hour, 
+                              const int minutes_in_an_hour, const int availability,
                               const double time_to_solution_in_minutes,
-                              double * cummulative_number_of_solutions_per_day);
+                              double * cumulative_number_of_solutions_per_day);
 
 void tailored(const int lifespan_in_days,const int days_in_a_year,
               const double normalization_of_money_spent,
@@ -83,19 +83,19 @@ void cloud(const int lifespan_in_days,const int days_in_a_year,
     doubling_period_in_days=days_in_a_year*2; // Moore's law
 
 
-    double cummulative_money_spent_per_day_cloud[lifespan_in_days];
+    double cumulative_money_spent_per_day_cloud[lifespan_in_days];
     for (int day_indx=0; day_indx<time_to_market_in_days_cloud; day_indx++){
-        cummulative_money_spent_per_day_cloud[day_indx]=capital_cost_cloud;
+        cumulative_money_spent_per_day_cloud[day_indx]=capital_cost_cloud;
     }
     for (int day_indx=time_to_market_in_days_cloud; day_indx<lifespan_in_days; day_indx++){
-        cummulative_money_spent_per_day_cloud[day_indx] = 
-            cummulative_money_spent_per_day_cloud[day_indx-1]+
+        cumulative_money_spent_per_day_cloud[day_indx] = 
+            cumulative_money_spent_per_day_cloud[day_indx-1]+
             cost_per_hour_of_use*hours_in_a_day;
     }
     
-    double cummulative_number_of_solutions_per_day_cloud[lifespan_in_days];
+    double cumulative_number_of_solutions_per_day_cloud[lifespan_in_days];
     for (int day_indx=0; day_indx<time_to_market_in_days_cloud; day_indx++){
-        cummulative_number_of_solutions_per_day_cloud[day_indx]=0;
+        cumulative_number_of_solutions_per_day_cloud[day_indx]=0;
     }
     double number_of_solutions_today;
     double time_to_solution_today_in_minutes;
@@ -104,19 +104,20 @@ void cloud(const int lifespan_in_days,const int days_in_a_year,
         time_to_solution_today_in_minutes=initial_time_to_solution_in_minutes*
                                 (pow(2,(-1.0*day_indx/doubling_period_in_days)));
         number_of_solutions_today=(hours_in_a_day*minutes_in_an_hour)/time_to_solution_today_in_minutes;
-        cummulative_number_of_solutions_per_day_cloud[day_indx] = 
-            cummulative_number_of_solutions_per_day_cloud[day_indx-1]+number_of_solutions_today;
+        cumulative_number_of_solutions_per_day_cloud[day_indx] = 
+            cumulative_number_of_solutions_per_day_cloud[day_indx-1]+
+            number_of_solutions_today*availability_cloud;
     }
 
     double cost_per_solution_cloud[lifespan_in_days];
     cost_per_solution(cost_per_solution_cloud, lifespan_in_days,
-                      cummulative_number_of_solutions_per_day_cloud, 
-                      cummulative_money_spent_per_day_cloud);
+                      cumulative_number_of_solutions_per_day_cloud, 
+                      cumulative_money_spent_per_day_cloud);
     
     //cout << "cloud:" << endl;
     print_columns(time_in_days_ary, lifespan_in_days, normalization_of_money_spent,
-                  cummulative_number_of_solutions_per_day_cloud,
-                  cummulative_money_spent_per_day_cloud,
+                  cumulative_number_of_solutions_per_day_cloud,
+                  cumulative_money_spent_per_day_cloud,
                   cost_per_solution_cloud,"cloud.dat" );
 }
 
@@ -130,30 +131,30 @@ void commodity(const int lifespan_in_days,const int days_in_a_year,
     int time_to_market_in_days_commodity=5; // days; includes acquisition and coding analytic
     double availability_commodity=99; // percent
 
-    double cummulative_money_spent_per_day_commodity[lifespan_in_days];
+    double cumulative_money_spent_per_day_commodity[lifespan_in_days];
     money_spent_per_day(time_to_market_in_days_commodity, capital_cost_commodity,
                         operations_and_maintenance_per_year_commodity,
                         days_in_a_year, lifespan_in_days,
-                        cummulative_money_spent_per_day_commodity);
+                        cumulative_money_spent_per_day_commodity);
 
 
-    double cummulative_number_of_solutions_per_day_commodity[lifespan_in_days];
+    double cumulative_number_of_solutions_per_day_commodity[lifespan_in_days];
     number_solutions_per_day(time_to_market_in_days_commodity, 
                              lifespan_in_days, hours_in_a_day,
-                             minutes_in_an_hour, 
+                             minutes_in_an_hour, availability_commodity,
                              time_to_solution_in_minutes_commodity,
-                             cummulative_number_of_solutions_per_day_commodity);
+                             cumulative_number_of_solutions_per_day_commodity);
 
 
     double cost_per_solution_commodity[lifespan_in_days];
     cost_per_solution(cost_per_solution_commodity, lifespan_in_days,
-                      cummulative_number_of_solutions_per_day_commodity, 
-                      cummulative_money_spent_per_day_commodity);
+                      cumulative_number_of_solutions_per_day_commodity, 
+                      cumulative_money_spent_per_day_commodity);
 
     //cout << "commodity:" << endl;
     print_columns(time_in_days_ary, lifespan_in_days, normalization_of_money_spent,
-                  cummulative_number_of_solutions_per_day_commodity,
-                  cummulative_money_spent_per_day_commodity,
+                  cumulative_number_of_solutions_per_day_commodity,
+                  cumulative_money_spent_per_day_commodity,
                   cost_per_solution_commodity,"commodity.dat");
 }
 
@@ -167,58 +168,58 @@ void tailored(const int lifespan_in_days,const int days_in_a_year,
     int time_to_market_in_days_tailored=365; // days; includes acquisition and coding analytic
     double availability_tailored=90; // percent
 
-    double cummulative_money_spent_per_day_tailored[lifespan_in_days];
+    double cumulative_money_spent_per_day_tailored[lifespan_in_days];
     money_spent_per_day(time_to_market_in_days_tailored, capital_cost_tailored,
                         operations_and_maintenance_per_year_tailored,
                         days_in_a_year, lifespan_in_days,
-                        cummulative_money_spent_per_day_tailored);
+                        cumulative_money_spent_per_day_tailored);
 
-    double cummulative_number_of_solutions_per_day_tailored[lifespan_in_days];
+    double cumulative_number_of_solutions_per_day_tailored[lifespan_in_days];
     number_solutions_per_day(time_to_market_in_days_tailored, 
                              lifespan_in_days, hours_in_a_day,
-                             minutes_in_an_hour, 
+                             minutes_in_an_hour, availability_tailored,
                              time_to_solution_in_minutes_tailored,
-                             cummulative_number_of_solutions_per_day_tailored);
+                             cumulative_number_of_solutions_per_day_tailored);
 
     double cost_per_solution_tailored[lifespan_in_days];
     cost_per_solution(cost_per_solution_tailored, lifespan_in_days,
-                      cummulative_number_of_solutions_per_day_tailored, 
-                      cummulative_money_spent_per_day_tailored);
+                      cumulative_number_of_solutions_per_day_tailored, 
+                      cumulative_money_spent_per_day_tailored);
 
     //cout << "tailored:" << endl;
     print_columns(time_in_days_ary, lifespan_in_days, normalization_of_money_spent,
-                  cummulative_number_of_solutions_per_day_tailored,
-                  cummulative_money_spent_per_day_tailored,
+                  cumulative_number_of_solutions_per_day_tailored,
+                  cumulative_money_spent_per_day_tailored,
                   cost_per_solution_tailored,"tailored.dat");
 }
 
 void cost_per_solution(double * cost_per_solution, const int lifespan_in_days,
-                 const double * cummulative_number_of_solutions_per_day, 
-                 const double * cummulative_money_spent_per_day){
+                 const double * cumulative_number_of_solutions_per_day, 
+                 const double * cumulative_money_spent_per_day){
     for (int day_indx=0; day_indx<lifespan_in_days; day_indx++){
-        if (cummulative_number_of_solutions_per_day[day_indx]==0){
+        if (cumulative_number_of_solutions_per_day[day_indx]==0){
             cost_per_solution[day_indx]=0;
         }else{
             cost_per_solution[day_indx]=
-            cummulative_money_spent_per_day[day_indx]/
-            cummulative_number_of_solutions_per_day[day_indx];
+            cumulative_money_spent_per_day[day_indx]/
+            cumulative_number_of_solutions_per_day[day_indx];
         }
     }
 }
 
 void print_columns(const int * time_in_days_ary, const int lifespan_in_days,
                    const double normalization_of_money_spent,
-                   const double * cummulative_number_of_solutions_per_day,
-                   const double * cummulative_money_spent_per_day,
+                   const double * cumulative_number_of_solutions_per_day,
+                   const double * cumulative_money_spent_per_day,
                    const double * cost_per_solution,const char * filename ){
     ofstream myfile;
     myfile.open (filename);
 
-    //cout << "time in days, cummulative number of solutions, cummulative_money_spent_per_day, cost per solution" << endl;
+    //cout << "time in days, cumulative number of solutions, cumulative_money_spent_per_day, cost per solution" << endl;
     for (int day_indx=0; day_indx<lifespan_in_days; day_indx++){
       myfile << time_in_days_ary[day_indx] << ", "
-             << cummulative_number_of_solutions_per_day[day_indx] << ", "
-             << cummulative_money_spent_per_day[day_indx]/normalization_of_money_spent << ", "
+             << cumulative_number_of_solutions_per_day[day_indx] << ", "
+             << cumulative_money_spent_per_day[day_indx]/normalization_of_money_spent << ", "
              << cost_per_solution[day_indx]
              << endl;
     }
@@ -231,29 +232,29 @@ void print_columns(const int * time_in_days_ary, const int lifespan_in_days,
 void money_spent_per_day(const int time_to_market_in_days, const double capital_cost,
                          const double operations_and_maintenance_per_year,
                          const int days_in_a_year, const int lifespan_in_days,
-                         double * cummulative_money_spent_per_day){
+                         double * cumulative_money_spent_per_day){
     for (int day_indx=0; day_indx<time_to_market_in_days; day_indx++){
-        cummulative_money_spent_per_day[day_indx]=capital_cost;
+        cumulative_money_spent_per_day[day_indx]=capital_cost;
     }
     for (int day_indx=time_to_market_in_days; day_indx<lifespan_in_days; day_indx++){
-        cummulative_money_spent_per_day[day_indx] = 
-            cummulative_money_spent_per_day[day_indx-1]+
+        cumulative_money_spent_per_day[day_indx] = 
+            cumulative_money_spent_per_day[day_indx-1]+
             (operations_and_maintenance_per_year/days_in_a_year);
     }
 }
 
 void number_solutions_per_day(const int time_to_market_in_days, 
                               const int lifespan_in_days, const int hours_in_a_day,
-                              const int minutes_in_an_hour, 
+                              const int minutes_in_an_hour, const int availability,
                               const double time_to_solution_in_minutes,
-                              double * cummulative_number_of_solutions_per_day){
+                              double * cumulative_number_of_solutions_per_day){
     for (int day_indx=0; day_indx<time_to_market_in_days; day_indx++){
-        cummulative_number_of_solutions_per_day[day_indx]=0;
+        cumulative_number_of_solutions_per_day[day_indx]=0;
     }
     for (int day_indx=time_to_market_in_days; day_indx<lifespan_in_days; day_indx++){
-        cummulative_number_of_solutions_per_day[day_indx] = 
-            cummulative_number_of_solutions_per_day[day_indx-1]+
-        (hours_in_a_day*minutes_in_an_hour)/time_to_solution_in_minutes;
+        cumulative_number_of_solutions_per_day[day_indx] = 
+            cumulative_number_of_solutions_per_day[day_indx-1]+
+        ((hours_in_a_day*minutes_in_an_hour)/time_to_solution_in_minutes)*availability;
         //((day_indx-time_to_market_in_days)*hours_in_a_day*minutes_in_an_hour)/time_to_solution_in_minutes;
     }
 }

@@ -31,18 +31,26 @@ int main()
     for (int indx=0; indx<pow(2,number_of_analytics); indx++){
         decimal_to_binary(arr, indx);
     
-        double tot=0;
+        
+        double time_on_a=0;
+        double time_on_b=0;
         for (int jndx=0; jndx<number_of_analytics; jndx++){
-            tot +=  arr[jndx]*cut_a[jndx]/(number_of_racks_of_a*1.0) +
-                   !arr[jndx]*cut_b[jndx]/(number_of_racks_of_b*1.0);
+            time_on_a +=  arr[jndx]*cut_a[jndx]/(number_of_racks_of_a*1.0);
+            time_on_b += !arr[jndx]*cut_b[jndx]/(number_of_racks_of_b*1.0);
         }
-        cout << tot << endl;
+        double longest_time=0;
+        if (time_on_a>time_on_b){
+            longest_time=time_on_a;
+        }else{
+            longest_time=time_on_b;
+        }
+        cout << longest_time << endl;
         if (indx==0){
-            minimum_tts = tot;
+            minimum_tts = longest_time;
             minimum_indx=indx;
         }else{ // indx>0
-            if (tot<minimum_tts){
-                minimum_tts = tot;
+            if (longest_time<minimum_tts){
+                minimum_tts = longest_time;
                 minimum_indx=indx;
             }
         }
