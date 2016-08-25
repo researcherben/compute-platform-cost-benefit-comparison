@@ -1,5 +1,8 @@
 close all
 
+% following is specific to Octave on MAC
+setenv("GNUTERM","qt");
+
 %% contants
 
 hours_in_a_day=24;
@@ -11,7 +14,7 @@ normalization_of_money_spent=1000000; % a million bucks
 linewidth=3;
 
 %% 
-system_category='external cloud, ie C2S';
+system_category='external cloud, ie AWS or GCE';
 
 capital_cost=0; % dollars; NRE and acquisition
 % operations_and_maintenance_per_year=0; % dollars
@@ -108,9 +111,9 @@ solutions_count = solutions_per_day*time_in_days-(solutions_per_day*time_to_mark
 solutions_count=solutions_count.*(solutions_count>0);
 figure(10); plot(time_in_days,solutions_count,'DisplayName',system_category,'LineWidth',linewidth); hold on; 
 set(gca,'XTick',[0 365 730 1095 1460 1825 2000]);
-title('time-to-market and time-to-solution; no outages'); xlabel('time [days]'); ylabel('number of solutions provided');
+title('time-to-market and time-to-solution'); xlabel('time [days]'); ylabel('number of solutions provided');
 legend('show');
-saveas(gcf,'platform_comparison_tts_and_ttm_U','png');
+saveas(gcf,'platform_comparison_tts_and_ttm','png');
 
 % calculate cost per solution
 time_in_days_for_money=time_in_days-time_to_market_in_days;
@@ -123,16 +126,16 @@ figure(20); plot(solutions_count,cost_per_solution); hold on;
 title('cost of system vs solutions provided'); xlabel('number of solutions provided'); ylabel('cost per solution');
 %}
 % "bang for your buck"
-figure(25); plot(time_in_days,cost_per_solution,'DisplayName',system_category,'LineWidth',linewidth);
+figure(25); semilogy(time_in_days,cost_per_solution,'DisplayName',system_category,'LineWidth',linewidth);
 set(gca,'XTick',[0 365 730 1095 1460 1825 2000]);
-title('bang for your buck; no outages'); xlabel('time [days]'); ylabel('cost per solution provided');
+title('bang for your buck'); xlabel('time [days]'); ylabel('cost per solution provided');
 legend('show');
-saveas(gcf,'platform_comparison_bang_for_your_buck_U','png');
+saveas(gcf,'platform_comparison_bang_for_your_buck','png');
 
 % total cost of ownership
 figure(30); plot(time_in_days,money_spent/normalization_of_money_spent,'DisplayName',system_category,'LineWidth',linewidth);
 set(gca,'XTick',[0 365 730 1095 1460 1825 2000]);
-title('total cost of ownership (TCO); no outages'); xlabel('time [days]'); ylabel('cost in millions of dollars');
+title('total cost of ownership (TCO)'); xlabel('time [days]'); ylabel('cost in millions of dollars');
 legend('show');
-saveas(gcf,'platform_comparison_tco_U','png');
+saveas(gcf,'platform_comparison_tco','png');
 
