@@ -1,15 +1,16 @@
 // http://stackoverflow.com/questions/22746429/c-decimal-to-binary-converting
 #include <iostream>
 #include <cmath>
+#include <iomanip>
 using std::cout;
 using std::cin;
 using std::endl;
+using std::setw;
 
 void decimal_to_binary(int * arr, int num, const int number_of_analytics);
 
 int main()
 {
-    
     const int number_of_analytics=5;
     const int number_of_compute_units_architecture_A=5;
     const double compute_time_architecture_A[number_of_analytics]={40.0, 100.0, 10.0, 5.0, 2.0};
@@ -87,6 +88,7 @@ int main()
     
     cout << "number of B in next fiscal period: "
          << number_of_new_compute_units_architecture_B << endl;
+
     int arr[number_of_analytics];
 
     double minimum_tts;
@@ -173,7 +175,7 @@ int main()
     /*
     cout << "array A: ";
     for(int indx=0; indx<number_of_analytics; indx++){
-        cout <<  arr[indx] << ", ";
+        cout << !arr[indx]*cut_b[indx] << ", ";
     }
     cout<<endl;
     cout << "array B: ";
@@ -196,5 +198,13 @@ void decimal_to_binary(int * arr, int num, const int number_of_analytics){
         arr[counter++] = remainder;
         num /= 2;
     }
+
+/*
+    cout << "in the function: " << endl;
+    for (int jndx=0; jndx<arr_size; jndx++){
+        cout << "jndx=" << jndx << endl;
+        cout << "arr @ jndx=" << arr[jndx] << endl;
+    }
+*/
 
 }
