@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 ## contants
 
 hours_in_a_day=24
